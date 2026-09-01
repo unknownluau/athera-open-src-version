@@ -1,0 +1,9 @@
+/node_modules
+*.tar
+# added either manually or by github actions/jenkins/etc
+gs-config.json
+dist
+place-conversion-data
+
+tmp_place_file.rbxl
+tmp_place_file_out.rbxl

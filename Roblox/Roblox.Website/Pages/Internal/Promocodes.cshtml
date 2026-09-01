@@ -1,0 +1,96 @@
+﻿@page "/internal/promocodes"
+@model Roblox.Website.Pages.Internal.Promocodes
+
+@{
+    Layout = "Shared/_Layout";
+}
+
+@section MetaTags {
+    <title>Promocodes</title>
+}
+
+<div class="container mt-4 mb-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-body">
+                <h3>Promocodes</h3>
+                
+                @if (Model.Result != null && Model.Result.showResult)
+                {
+                    @if (!Model.Result.success)
+                    {
+                        <div class="alert alert-danger">@Model.Result.message</div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success">@Model.Result.message</div>
+                        
+                        @if (Model.Result.assetId.HasValue)
+                        {
+                            <div class="mt-3">
+                                <h4>You received:</h4>
+                                <div class="row">
+                                    <div class="col-6 col-md-4 col-lg-2 mb-2">
+                                        <div class="card">
+                                            <a href="/catalog/@Model.Result.assetId/--">
+                                                <img class="w-100 mx-auto" src="/thumbs/asset.ashx?assetId=@Model.Result.assetId"/>
+                                            </a>
+                                            <div class="card-body">
+                                                <p class="mb-0 fw-bolder text-truncate">@(Model.Result.name ?? "Unknown Item")</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        
+                        @if (Model.Result.robux.HasValue)
+                        {
+                            <div class="mt-3">
+                                <h4>You received:</h4>
+                                <div class="row">
+                                    <div class="col-6 col-md-4 col-lg-2 mb-2">
+                                        <div class="card">
+                                            <a href="#">
+                                                <img class="w-100 mx-auto" src="@($"{Roblox.Configuration.BaseUrl}/UnsecuredContent/robux.png")" />
+                                            </a>
+                                            <div class="card-body">
+                                                <p class="mb-0 fw-bolder text-truncate">@Model.Result.robux.Value.ToString("N0") Robux</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+                
+                <form method="post" class="mt-3">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="code" name="code" placeholder="Promocode" required>
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2" name="handler" value="redeem">
+                        <span id="submitText">Redeem</span>
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('form').addEventListener('submit', function() {
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const submitText = document.getElementById('submitText');
+            const spinner = document.getElementById('spinner');
+            
+            submitBtn.disabled = true;
+            submitText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+        });
+    </script>
+}

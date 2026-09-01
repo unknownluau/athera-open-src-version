@@ -1,0 +1,260 @@
+import React, { useRef, useState, useEffect } from "react";
+import { createUseStyles } from "react-jss";
+import getFlag from "../../../lib/getFlag";
+import { setUserDescription } from "../../../services/accountInformation";
+import { getTheme, setTheme } from "../../../services/theme";
+import { getAvatarMenu, setAvatarYear } from "../../../services/avatarmenu";
+import { get2020Menu, set2020Menu } from "../../../services/develop";
+import { getGlobalAlertSetting, setGlobalAlertSetting } from "../../../services/globalAlertSetting";
+import AuthenticationStore from "../../../stores/authentication";
+import useCardStyles from "../../userProfile/styles/card";
+import MyAccountStore from "../stores/myAccountStore"
+import useFormStyles from "../styles/forms";
+import GenderSelection from "./genderSelection";
+import Subtitle from "./subtitle";
+
+const useEditButtonStyles = createUseStyles({
+  editButton: {
+    float: 'right',
+    color: '#666',
+    cursor: 'pointer',
+  },
+})
+
+const EditButton = (props) => {
+  const s = useEditButtonStyles();
+  return <span className={s.editButton} onClick={props.onClick}>Edit</span>
+}
+
+const allowedProfileMusicUserIds = [1, 415];
+
+const AccountInfo = props => {
+  const store = MyAccountStore.useContainer();
+  const auth = AuthenticationStore.useContainer();
+  const descRef = useRef(null);
+  const [is2020MenuEnabled, set2020MenuEnabled] = useState(false);
+  const [avatarMenu, setAvatarMenu] = useState(getAvatarMenu());
+  const [globalAlertSetting, setGlobalAlertState] = useState(getGlobalAlertSetting());
+  const [isLoading, setIsLoading] = useState(false);
+
+  const cardStyles = useCardStyles();
+  const s = useFormStyles();
+
+  useEffect(() => {
+    const load2020Menu = async () => {
+      try {
+        const menuSetting = await get2020Menu();
+        set2020MenuEnabled(menuSetting.enabled);
+      } catch (error) {
+        console.error("Failed to get 2020 menu setting:", error);
+      }
+    };
+    load2020Menu();
+  }, []);
+
+  const handle2020MenuChange = async (enabled) => {
+    setIsLoading(true);
+    try {
+      await set2020Menu({ enabled });
+      set2020MenuEnabled(enabled);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to set 2020 menu setting:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAvatarMenuChange = (newValue) => {
+    setAvatarYear(newValue);
+    setAvatarMenu(newValue);
+  };
+
+  const handleGlobalAlertChange = (newValue) => {
+    setGlobalAlertSetting(newValue);
+    setGlobalAlertState(newValue);
+    window.location.reload();
+  };
+
+  return <div className='row'>
+    <div className='col-12 mt-2'>
+      <Subtitle>Account Info</Subtitle>
+      <div className={cardStyles.card + ' p-3'}>
+        <p className={s.accountInfoLabel}>Username: <span className={s.accountInfoValue}>{auth.username}</span> <EditButton onClick={() => {
+          store.setModal('CHANGE_USERNAME');
+        }}></EditButton></p>
+        {allowedProfileMusicUserIds.includes(auth.userId) && (
+          <p className={s.accountInfoLabel}>Profile Music: <span className={s.accountInfoValue}></span> <EditButton onClick={() => {
+            store.setModal('SET_PROFILE_MUSIC');
+          }}>Edit</EditButton></p>
+        )}
+        <p className={s.accountInfoLabel}>Password: <span className={s.accountInfoValue}>**********</span> <EditButton onClick={() => {
+          store.setModal('CHANGE_PASSWORD');
+        }}></EditButton></p>
+        <p className={s.accountInfoLabel}>Email Address: <span className={s.accountInfoValue}>{store.email}</span> <EditButton onClick={() => {
+          store.setModal('CHANGE_EMAIL');
+        }}></EditButton></p>
+      </div>
+    </div>
+    <div className='col-12 mt-2'>
+      <Subtitle>Personal</Subtitle>
+      <div className={cardStyles.card + ' p-3'}>
+        <textarea ref={descRef} className={s.descInput} rows={3} defaultValue={store.description}></textarea>
+        <p className='mb-0 font-size-12'>Do not provide any details that can be used to identify you outside ROBLOX.</p>
+        <div className='mt-1'>
+          <div className='row'>
+            <div className='col pe-0'>
+              <input className={'form-control ' + s.select + ' ' + s.disabled} value='Birthday' readOnly={true} type='text'></input>
+            </div>
+            <div className='col ps-0 pe-0'>
+              <select className={'form-control ' + s.select}>
+                <option value='1'>January</option>
+                <option value='2'>February</option>
+                <option value='3'>March</option>
+                <option value='4'>April</option>
+                <option value='5'>May</option>
+                <option value='6'>June</option>
+                <option value='7'>July</option>
+                <option value='8'>August</option>
+                <option value='9'>September</option>
+                <option value='10'>October</option>
+                <option value='11'>November</option>
+                <option value='12'>December</option>
+              </select>
+            </div>
+            <div className='col ps-0 pe-0'>
+              <select className={'form-control ' + s.select}>
+                {[... new Array(31)].map((v, i) => {
+                  return <option value={i + 1} key={i}>{i + 1}</option>
+                })}
+              </select>
+            </div>
+            <div className='col ps-0'>
+              <select className={'form-control ' + s.select}>
+                {[... new Array(100)].map((v, i) => {
+                  return <option value={2016 - i} key={i}>{2016 - i}</option>
+                })}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div className='mt-2'>
+          <div className='row'>
+            <div className='col pe-0'>
+              <input className={'form-control ' + s.select + ' ' + s.disabled} value='Gender' readOnly={true} type='text'></input>
+            </div>
+            <GenderSelection id={2} displayName='Male'></GenderSelection>
+            <GenderSelection id={3} displayName='Female'></GenderSelection>
+          </div>
+        </div>
+        <div className='mt-1 mb-4'>
+          <div className={s.saveButtonWrapper}>
+            <button className={s.saveButton} onClick={() => {
+              // todo: gender, birthdate
+              setUserDescription({
+                newDescription: descRef.current.value,
+              });
+            }}>Save</button>
+          </div>
+        </div>
+        <div className='mt-4 mb-4'>&emsp;</div>
+      </div>
+    </div>
+    {getFlag("settingsPageThemeSelectorEnabled", false) && (
+      <div className="col-12 mt-2">
+        <Subtitle>Extensions</Subtitle>
+        <div className={cardStyles.card + " p-3"}>
+          <div className="row mt-1">
+            <div className="col pe-0">
+              <input
+                className={"form-control " + s.select + " " + s.disabled}
+                value="Website Theme"
+                readOnly
+                type="text"
+              />
+            </div>
+            <div className="col ps-0 pe-0">
+              <select
+                className={"form-control " + s.select}
+                value={getTheme()}
+                onChange={(ev) => {
+                  setTheme(ev.currentTarget.value);
+                  window.location.reload();
+                }}
+              >
+                <option value="light">Default</option>
+                <option value="obc2016">OBC Theme</option>
+                <option value="dark">Dark</option>
+              </select>
+            </div>
+          </div>
+          <div className="row mt-3">
+            <div className="col pe-0">
+              <input
+                className={"form-control " + s.select + " " + s.disabled}
+                value="2020+ Beta Menu"
+                readOnly
+                type="text"
+              />
+            </div>
+            <div className="col ps-0 pe-0">
+              <select
+                className={"form-control " + s.select}
+                value={is2020MenuEnabled ? "enabled" : "disabled"}
+                onChange={(ev) =>
+                  handle2020MenuChange(ev.currentTarget.value === "enabled")
+                }
+                disabled={isLoading}
+              >
+                <option value="disabled">Disabled</option>
+                <option value="enabled">Enabled</option>
+              </select>
+            </div>
+          </div>
+          <div className="row mt-3">
+            <div className="col pe-0">
+              <input
+                className={"form-control " + s.select + " " + s.disabled}
+                value="Avatar Menu"
+                readOnly
+                type="text"
+              />
+            </div>
+            <div className="col ps-0 pe-0">
+              <select
+                className={"form-control " + s.select}
+                value={avatarMenu}
+                onChange={(ev) => handleAvatarMenuChange(ev.currentTarget.value)}
+              >
+                <option value="Legacy">Legacy</option>
+                <option value="R15">R15</option>
+              </select>
+            </div>
+          </div>
+          <div className="row mt-3">
+            <div className="col pe-0">
+              <input
+                className={"form-control " + s.select + " " + s.disabled}
+                value="Hide Site-Wide Alerts"
+                readOnly
+                type="text"
+              />
+            </div>
+            <div className="col ps-0 pe-0">
+              <select
+                className={"form-control " + s.select}
+                value={globalAlertSetting}
+                onChange={(ev) => handleGlobalAlertChange(ev.currentTarget.value)}
+              >
+                <option value="1">Hide</option>
+                <option value="2">Show</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>;
+};
+
+export default AccountInfo;

@@ -1,0 +1,159 @@
+function start(placeId, port, url)
+------------------- UTILITY FUNCTIONS --------------------------
+
+function waitForChild(parent, childName)
+	while true do
+		local child = parent:findFirstChild(childName)
+		if child then
+			return child
+		end
+		parent.ChildAdded:wait()
+	end
+end
+
+-----------------------------------END UTILITY FUNCTIONS -------------------------
+
+-----------------------------------"CUSTOM" SHARED CODE----------------------------------
+
+pcall(function() settings().Network.UseInstancePacketCache = true end)
+pcall(function() settings().Network.UsePhysicsPacketCache = true end)
+--pcall(function() settings()["Task Scheduler"].PriorityMethod = Enum.PriorityMethod.FIFO end)
+pcall(function() settings()["Task Scheduler"].PriorityMethod = Enum.PriorityMethod.AccumulatedError end)
+
+--settings().Network.PhysicsSend = 1 -- 1==RoundRobin
+--settings().Network.PhysicsSend = Enum.PhysicsSendMethod.ErrorComputation2
+settings().Network.PhysicsSend = Enum.PhysicsSendMethod.TopNErrors
+settings().Network.ExperimentalPhysicsEnabled = true
+settings().Network.WaitingForCharacterLogRate = 100
+pcall(function() settings().Diagnostics:LegacyScriptMode() end)
+
+-----------------------------------START GAME SHARED SCRIPT------------------------------
+
+local assetId = placeId -- might be able to remove this now
+
+local scriptContext = game:GetService('ScriptContext')
+pcall(function() scriptContext:AddStarterScript(37801172) end)
+scriptContext.ScriptsDisabled = true
+
+game:SetPlaceID(assetId, false)
+game:GetService("ChangeHistoryService"):SetEnabled(false)
+
+-- establish this peer as the Server
+local ns = game:GetService("NetworkServer")
+
+if url~=nil then
+	pcall(function() game:GetService("Players"):SetAbuseReportUrl(url .. "/AbuseReport/InGameChatHandler.ashx") end)
+	pcall(function() game:GetService("ScriptInformationProvider"):SetAssetUrl(url .. "/Asset/") end)
+	pcall(function() game:GetService("ContentProvider"):SetBaseUrl(url .. "/") end)
+	--pcall(function() game:GetService("Players"):SetChatFilterUrl(url .. "/Game/ChatFilter.ashx") end)
+
+	game:GetService("BadgeService"):SetPlaceId(placeId)
+
+	game:GetService("BadgeService"):SetIsBadgeLegalUrl("")
+	game:GetService("InsertService"):SetBaseSetsUrl(url .. "/Game/Tools/InsertAsset.ashx?nsets=10&type=base")
+	game:GetService("InsertService"):SetUserSetsUrl(url .. "/Game/Tools/InsertAsset.ashx?nsets=20&type=user&userid=%d")
+	game:GetService("InsertService"):SetCollectionUrl(url .. "/Game/Tools/InsertAsset.ashx?sid=%d")
+	game:GetService("InsertService"):SetAssetUrl(url .. "/Asset/?id=%d")
+	game:GetService("InsertService"):SetAssetVersionUrl(url .. "/Asset/?assetversionid=%d")
+	
+	pcall(function() loadfile(url .. "/Game/LoadPlaceInfo.ashx?PlaceId=" .. placeId)() end)
+	
+	-- pcall(function() 
+	--			if access then
+	--				loadfile(url .. "/Game/PlaceSpecificScript.ashx?PlaceId=" .. placeId .. "&" .. access)()
+	--			end
+	--		end)
+end
+
+--pcall(function() game:GetService("NetworkServer"):SetIsPlayerAuthenticationRequired(true) end)
+settings().Diagnostics.LuaRamLimit = 0
+--settings().Network:SetThroughputSensitivity(0.08, 0.01)
+--settings().Network.SendRate = 35
+--settings().Network.PhysicsSend = 0  -- 1==RoundRobin
+
+
+game:GetService("Players").PlayerAdded:connect(function(player)
+    print("Player " .. player.userId .. " added")
+
+    player.Chatted:connect(function(message)
+        print(player.Name .. " said: " .. message)
+    end)
+end)
+
+game:GetService("Players").PlayerRemoving:connect(function(player)
+    print("Player " .. player.userId .. " leaving")
+end)
+
+
+if placeId ~= nil and url ~= nil then
+    print("[Loader] Place ID and URL are valid.")
+    wait()
+    print("[Loader] loading game...")
+    game:Load("rbxasset://1.rbxl")
+
+    print("[Loader] loading camera...")
+    local success, model = pcall(function()
+        return game:GetObjects("rbxasset://camera.rbxmx")[1]
+    end)
+
+    if success and model then
+		local starterPlayer = game:GetService("StarterPlayer")
+        local starterScripts = starterPlayer:FindFirstChild("StarterPlayerScripts") or starterPlayer:FindFirstChild("StarterCharacterScripts")
+        
+        if not starterScripts then
+            print("[Loader] StarterPlayerScripts not found, creating...")
+            starterScripts = Instance.new("Folder")
+            starterScripts.Name = "StarterPlayerScripts"
+            starterScripts.Parent = starterPlayer
+        else
+            print("[Loader] Found StarterPlayerScripts.")
+        end
+
+        for _, child in pairs(model:GetChildren()) do
+            if child:IsA("LocalScript") or child:IsA("Script") or child:IsA("ModuleScript") or child:IsA("Folder") then
+                child.Parent = starterScripts
+            else
+                print("[Loader] skipped", child.Name, "because it is", child.ClassName)
+            end
+        end
+
+        model.Parent = starterScripts
+
+        print("\n[Loader] StarterPlayerScripts tree:")
+
+        local function printdec(object, indent)
+            indent = indent or ""
+            print(indent .. "- " .. object.Name .. " (" .. object.ClassName .. ")")
+            for _, child in ipairs(object:GetChildren()) do
+                printdec(child, indent .. "    ")
+            end
+        end
+
+        printdec(starterScripts)
+
+        print("[Loader] Finished loading")
+    else
+        warn("[Loader] Failed to load camera.rbxmx:", model)
+    end
+else
+    warn("[Loader] Place id or url is nil, cannot continue")
+end
+
+-- Now start the connection
+ns:Start(50) 
+
+
+scriptContext:SetTimeout(10)
+scriptContext.ScriptsDisabled = false
+
+
+
+------------------------------END START GAME SHARED SCRIPT--------------------------
+
+
+
+-- StartGame -- 
+game:GetService("RunService"):Run()
+
+
+end

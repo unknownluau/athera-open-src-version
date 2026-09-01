@@ -1,0 +1,11 @@
+{
+    "rcc": "C:\\Users\\Administrator\\Downloads\\Revival\\athera\\RCCService",
+    "rccexe": "RCCService.exe",
+    "authorization": "adWSETINKEEEEE",
+    "baseUrl": "https://athera.sbs",
+    "rccPort": 64989,
+    "port": 3040,
+    "websiteBotAuth": "adWSETINKEEEEE",
+    "thumbnailWebsocketPort": 3189,
+    "webhook": ""
+}

@@ -1,0 +1,280 @@
+@font-face {
+    font-family: 'HCo Gotham SSm';
+    src: url('/img/GothamSSm-Light.woff2') format('woff2'),
+        url('/img/GothamSSm-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'HCo Gotham SSm';
+    src: url('/img/GothamSSm-Book.woff2') format('woff2'),
+        url('/img/GothamSSm-Book.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'HCo Gotham SSm';
+    src: url('/img/GothamSSm-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'HCo Gotham SSm';
+    src: url('/img/GothamSSm-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+html {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+*,
+:after,
+:before {
+    -webkit-box-sizing: inherit;
+    -moz-box-sizing: inherit;
+    box-sizing: inherit;
+}
+
+.gotham-font body,
+.gotham-font .rbx-body,
+.gotham-font {
+    font-family: "HCo Gotham SSm", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif !important;
+}
+
+.light-theme {
+    background-color: #f2f4f5;
+    color: #393b3d;
+}
+
+.container-list {
+    margin: 0 0 6px;
+    padding: 0;
+}
+
+.container-header {
+    margin: 3px 0 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container-header h3 {
+    margin: 0;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.4em;
+}
+
+.btn-more {
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    color: #00a2ff;
+}
+
+.btn-more:hover {
+    text-decoration: underline;
+}
+
+.hlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.hlist:after,
+.hlist:before {
+    content: " ";
+    display: table;
+}
+
+.hlist:after {
+    clear: both;
+}
+
+.hlist .list-item {
+    float: left;
+}
+
+.game-cards {
+    white-space: nowrap;
+}
+
+.game-cards .game-card {
+    float: none;
+    width: 164px;
+    height: 240px;
+    padding: 0 14px 0 0;
+    display: inline-block;
+    vertical-align: top;
+    white-space: normal;
+}
+
+@media (max-width: 543px) {
+    .game-cards .game-card {
+        width: 102px;
+        padding: 0;
+    }
+}
+
+.game-card-container {
+    position: relative;
+    border-radius: 3px;
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    transition: transform 0.1s ease-in-out;
+}
+
+.game-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.game-card-thumb-container {
+    position: relative;
+    height: 150px;
+    width: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.game-card-thumb-container:before {
+    border-radius: 8px;
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: radial-gradient(transparent, rgba(0, 0, 0, 0.2));
+    transition: opacity 0.3s linear;
+    opacity: 0;
+    z-index: 1;
+}
+
+.game-card-container:hover .game-card-thumb-container:before {
+    opacity: 1;
+}
+
+.game-card-thumb {
+    height: 150px;
+    width: 150px;
+    border-radius: 8px;
+    display: block;
+}
+
+@media (max-width: 543px) {
+
+    .game-card-thumb-container,
+    .game-card-thumb {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.game-card-link:hover {
+    text-decoration: none;
+    color: inherit !important;
+}
+
+.game-card-container:hover .game-card-name {
+    color: inherit !important;
+    text-decoration: none;
+}
+
+.game-card-name {
+    font-weight: 500;
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1.4em;
+    max-height: 2.8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #393b3d;
+}
+
+.game-card-info {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #757575;
+    display: flex;
+    align-items: center;
+}
+
+.info-label {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.vote-percentage-label,
+.playing-counts-label {
+    margin-left: 2px;
+    margin-right: 8px;
+}
+
+.icon-votes-gray-white-70,
+.icon-playing-counts-gray-white-70 {
+    background-image: url(/img/dark_common_small.svg) !important;
+    background-repeat: no-repeat;
+    display: inline-block;
+    background-size: 32px auto !important;
+    width: 16px;
+    height: 16px;
+}
+
+.icon-votes-gray-white-70 {
+    background-position: 0 -32px !important;
+}
+
+.icon-playing-counts-gray-white-70 {
+    background-position: 0 -48px !important;
+}
+
+.light-theme .game-card-link:hover,
+.light-theme .game-card-link:hover .game-card-name,
+.light-theme .game-card-container:hover .game-card-name {
+    color: #393b3d !important;
+    text-decoration: none !important;
+}
+
+.sponsored-game {
+    display: inline-block;
+}
+
+.game-card-native-ad {
+    margin-top: 4px;
+    background-color: #f2f4f5;
+    border-radius: 2px;
+    padding: 2px 4px;
+}
+
+.native-ad-label {
+    font-size: 10px;
+    color: #757575;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.game-card-year {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 4px;
+    z-index: 2;
+    pointer-events: none;
+}

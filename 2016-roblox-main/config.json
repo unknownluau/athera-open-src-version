@@ -1,0 +1,54 @@
+{
+  "serverRuntimeConfig": {
+    "backend": {
+      "csrfKey": "2NekqgcpRg4+Y3RRcYjE4jVt8xuDwTS1JpZPlKFAgUdHu1EKhP2HvJD5P+axVsz9A1kAT1Sy3C+yFwGcq6ltYw=="
+    }
+  },
+  "publicRuntimeConfig": {
+    "backend": {
+      "proxyEnabled": true,
+      "flags": {
+        "myAccountPage2016Enabled": true,
+        "catalogGenreFilterSupported": true,
+        "catalogPageLimit": 28,
+        "catalogSaleCountVisibleFromDetailsEndpoint": true,
+        "commentsEndpointHasAreCommentsDisabledProp": true,
+        "catalogDetailsPageResellerLimit": 10,
+        "avatarPageInventoryLimit": 10,
+        "friendsPageLimit": 25,
+        "settingsPageThemeSelectorEnabled": true,
+        "tradeWindowInventoryCollectibleLimit": 10,
+        "moneyPagePromotionTabVisible": false,
+        "gameGenreFilterSupported": true,
+        "avatarPageOutfitCreatedAtAvailable": true,
+        "catalogDetailsPageOwnersTabEnabled": true,
+        "launchUsingEsURI": true,
+        "downloadPageEnabled": true,
+        "downloadGameClients": [
+          {
+            "title": "Windows Athera Launcher",
+            "url": "https://setup.athera.sbs/AtheraPlayerLauncher.exe",
+            "imageUrl": "/otherlogos/windows.png"
+          },
+          {
+            "title": "Athera 2020L Android",
+            "url": "https://setup.athera.sbs/Athera2020L.apk",
+            "imageUrl": "/otherlogos/Android.png"
+          },
+          {
+            "title": "Athera 2021E Android",
+            "url": "https://setup.athera.sbs/Athera2021E.apk",
+            "imageUrl": "/otherlogos/Android.png"
+          },
+          {
+            "title": "Athera FPS Unlocker",
+            "url": "https://github.com/unknownluau/atherafpsunlocker/releases/latest",
+            "imageUrl": "/otherlogos/fpsunlocker.png"
+          }
+        ]
+      },
+      "baseUrl": "https://athera.sbs/",
+      "apiFormat": "https://athera.sbs/apisite/{0}{1}"
+    }
+  }
+}

@@ -1,0 +1,214 @@
+<html><head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="frame-src 'self' https://discord.com https://*.discord.com https://hcaptcha.com https://*.hcaptcha.com;">
+<link href="favicon.ico" rel="icon">
+<title>Athera</title>
+<style>
+@font-face{font-family:'GothamSSm-Book';src:url('https://css.rbxcdn.com/713e0b3a604ff4e44f55f9d1c100e8b5-GothamSSm-Book.woff') format('woff'),url('https://css.rbxcdn.com/6eafc48312528e2515d622428b6b95cc-GothamSSm-Book.woff2') format('woff2');font-weight:400;font-style:normal}
+@font-face{font-family:'GothamSSm-Light';src:url('https://css.rbxcdn.com/5c779fadf28d7893108d5b896e092e0d-GothamSSm-Light.woff') format('woff'),url('https://css.rbxcdn.com/38e00f7de6f417aa3a458560a15e2b8a-GothamSSm-Light.woff2') format('woff2');font-weight:300;font-style:normal}
+@font-face{font-family:'GothamSSm-Medium';src:url('https://css.rbxcdn.com/2ed7693f8cf4d79466dd604c35502f76-GothamSSm-Medium.woff') format('woff'),url('https://css.rbxcdn.com/66d562e3299ee732a53db150038c026e-GothamSSm-Medium.woff2') format('woff2');font-weight:500;font-style:normal}
+</style>
+<link rel="stylesheet" href="https://css.rbxcdn.com/eae0f5d559667d422bdd7831e146a36df0295fc3998748ee6484a5126571b0cc.css">
+<link rel="stylesheet" href="https://css.rbxcdn.com/e0bcc553b7b9a1dd061c6ade9b1da1fcd7a10d3c86940c321b8823d97689038a.css">
+<style>
+body{margin:0;padding:0;font-family:'GothamSSm-Book','Gotham',Arial,sans-serif!important}
+.rbx-body{font-family:'GothamSSm-Book','Gotham',Arial,sans-serif!important}
+.gotham-font{font-family:'GothamSSm-Book','Gotham',Arial,sans-serif!important}
+html body{font-family:'GothamSSm-Book','Gotham',Arial,sans-serif!important}
+#facebook-login-button{color:#fff!important}
+#facebook-login-button:hover{cursor:pointer}
+.social-login{background-color:#3b5998!important}
+</style>
+<style>
+.spinner{background-image:url('https://images.rbxcdn.com/059b09408c6b199c.gif');background-position:50%;background-repeat:no-repeat;background-color:transparent;background-size:auto 24px;height:24px;margin:6px auto;display:block;width:100%}
+</style>
+</head>
+<body id="rbx-body" class="rbx-body light-theme gotham-font" data-performance-relative-value="0.005" data-internal-page-name="Login" data-send-event-percentage="0">
+
+<script>
+(function() {
+    var isInIframe = window !== window.top;
+    if (isInIframe) {
+        try {
+            var parentLocation = window.top.location.href;
+        } catch(e) {
+            return;
+        }
+    }
+    
+    if (document.cookie.includes('.ROBLOSECURITY')) {
+        window.location.href = '/home';
+        return;
+    }
+    
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/apisite/users/v1/users/authenticated', true);
+    xhr.withCredentials = true;
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            try {
+                var response = JSON.parse(xhr.responseText);
+                if (response.id && response.name) {
+                    window.location.href = '/home';
+                }
+            } catch(e) {}
+        }
+    };
+    xhr.onerror = function() {};
+    xhr.send();
+})();
+
+function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+}
+
+function getparam(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+function submitLogin(e) {
+    e.preventDefault();
+    var form = document.getElementById('login-form');
+    var loginBtn = document.getElementById('login-button');
+    var spinner = document.getElementById('login-spinner');
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (spinner) spinner.style.display = 'block';
+    var formData = new FormData(form);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/login', true);
+    xhr.withCredentials = true;
+    xhr.onload = function() {
+        if (loginBtn) loginBtn.style.display = 'block';
+        if (spinner) spinner.style.display = 'none';
+        if (document.cookie.includes('.ROBLOSECURITY')) {
+            window.parent.postMessage({ type: 'navigate', url: '/home' }, '*');
+            return;
+        }
+        var responseUrl = xhr.responseURL || '';
+        if (responseUrl.includes('/home')) {
+            window.parent.postMessage({ type: 'navigate', url: '/home' }, '*');
+        } else if (responseUrl.includes('/login/2fa') || responseUrl.includes('/login/two-step-verification') || responseUrl.includes('two-step')) {
+            var twoFaUrl = new URL(responseUrl);
+            window.parent.postMessage({ type: 'navigate', url: twoFaUrl.pathname + twoFaUrl.search }, '*');
+        } else if (responseUrl.includes('loginmsg')) {
+            var url = new URL(responseUrl);
+            var errorMsg = url.searchParams.get('loginmsg');
+            if (errorMsg) {
+                var errDiv = document.getElementById('login-error-message');
+                if (errDiv) {
+                    errDiv.textContent = decodeURIComponent(errorMsg);
+                    errDiv.style.display = 'block';
+                }
+            }
+        }
+    };
+    xhr.onerror = function() {
+        if (loginBtn) loginBtn.style.display = 'block';
+        if (spinner) spinner.style.display = 'none';
+    };
+    xhr.send(formData);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var loginMsg = getparam('loginmsg');
+    if (loginMsg && loginMsg.trim() !== '') {
+        var errDiv = document.getElementById('login-error-message');
+        if (errDiv) {
+            errDiv.textContent = loginMsg;
+            errDiv.style.display = 'block';
+        }
+    }
+    
+    var loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', submitLogin);
+    }
+    
+    var discordBtn = document.getElementById('facebook-login-button');
+    if (discordBtn) {
+        discordBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.parent.postMessage({ type: 'navigate', url: '/login-with-discord' }, '*');
+        });
+    }
+    
+    var forgotLink = document.getElementById('forgot-credentials-link');
+    if (forgotLink) {
+        forgotLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.parent.postMessage({ type: 'navigate', url: '/forgotpasswordOrUsername' }, '*');
+        });
+    }
+    
+    var signupLink = document.getElementById('sign-up-link');
+    if (signupLink) {
+        signupLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.parent.postMessage({ type: 'navigate', url: '/' }, '*');
+        });
+    }
+});
+</script>
+
+<div id="wrap" class="wrap no-gutter-ads logged-out">
+    <div class="container-main" id="container-main">
+        <div class="content">
+            <div id="login-container" class="login-container">
+                <div id="login-base">
+                    <div class="section-content login-section">
+                        <h2 class="login-header" id="login-title">Login to Athera</h2>
+                        <div class="login-form-container">
+                            <div id="login-error-message" class="text-danger" style="display:none;color:#FF0000;font-weight:500;font-size:13px;margin-bottom:10px;"></div>
+                            <form id="login-form" class="login-form" action="/login" method="POST">
+                                <div class="form-group username-form-group">
+                                    <input id="login-username" name="username" type="text" class="form-control input-field" placeholder="Username" required="">
+                                </div>
+                                <div class="form-group password-form-group">
+                                    <input id="login-password" name="password" type="password" class="form-control input-field" placeholder="Password" required="">
+                                </div>
+                                <button id="login-button" type="submit" class="btn-full-width login-button btn-secondary-md">Log In</button>
+                                <div id="login-spinner" class="spinner" style="display:none;"></div>
+                                <div class="text-center forgot-credentials-link">
+                                    <a id="forgot-credentials-link" class="text-link" href="/forgotpasswordOrUsername">Forgot Password or Username?</a>
+                                </div>
+                            </form>
+                            
+                            <div class="fb-divider-container">
+                                <div class="rbx-divider fb-divider"></div>
+                                <div class="divider-text-container">
+                                    <span class="divider-text xsmall">login with your</span>
+                                </div>
+                            </div>
+                            <a id="facebook-login-button" class="btn-full-width btn-control-md fb-button social-login" href="/login-with-discord">
+                                <span class="fb-icon"></span>
+                                <span style="color:#fff">Discord</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="signup-option">
+                            <span class="no-account-text">Don't have an account?</span>
+                            <a id="sign-up-link" class="text-link signup-link" href="/">Sign Up</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</body></html>

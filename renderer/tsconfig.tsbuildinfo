@@ -1,0 +1,1 @@
+{"root":["./src/discord.ts","./src/index.ts","./src/rendering.ts","./src/scripts.ts","./src/server.ts","./src/controllers/index.ts","./src/helpers/config.ts","./src/helpers/cookies.ts","./src/helpers/exceptions.ts","./src/models/index.ts"],"version":"6.0.3"}

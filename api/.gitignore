@@ -1,0 +1,7 @@
+config.json
+public/images/thumbnails/*
+public/images/groups/*
+dist
+tmp
+node_modules
+storage

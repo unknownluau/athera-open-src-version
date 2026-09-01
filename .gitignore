@@ -1,0 +1,20 @@
+# project deps
+**/node_modules
+# env files
+**/*.env
+
+.DS_Store
+node_modules
+/admin/public/build/*
+package-lock.json
+yarn.lock
+/api/public/img/setup
+2016-roblox-main/package-lock.json
+/2016-roblox-main/.next
+setup/files
+/AssetDelivery/cache
+DiscordBot/processed-assets.json
+dump.rdb
+Roblox/Roblox.Website/ugc_debug.log
+Roblox/Roblox.Website/ugc_debug.log
+/Donate
